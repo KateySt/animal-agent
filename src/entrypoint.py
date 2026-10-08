@@ -75,6 +75,7 @@ async def entrypoint(ctx: JobContext):
                 model=anthropic_config.ANTHROPIC_MODEL,
                 api_key=anthropic_config.ANTHROPIC_API_KEY,
                 max_tokens=anthropic_config.ANTHROPIC_MAX_TOKEN,
+                _strict_tool_schema=False,
             ),
             tts=lk_elevenlabs.TTS(
                 voice_id=speech_config.ELEVENLABS_VOICE_ID,
