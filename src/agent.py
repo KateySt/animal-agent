@@ -26,7 +26,7 @@ class ChatAgent(Agent):
         if turn_ctx is not None:
             update_instructions(turn_ctx, instructions=instructions, add_if_missing=True)
 
-    async def on_user_turn_completed(self, turn_ctx: llm.ChatContext, _: llm.ChatMessage) -> None:
+    async def on_user_turn_completed(self, turn_ctx: llm.ChatContext, new_message: llm.ChatMessage) -> None:
         await self.refresh_documents(turn_ctx)
 
     async def _build_instructions(self) -> str:
