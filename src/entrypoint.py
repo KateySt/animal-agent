@@ -10,6 +10,7 @@ if sys.platform == "win32":
 
 from livekit.agents import (
     AgentSession,
+    CloseEvent,
     ConversationItemAddedEvent,
     FunctionToolsExecutedEvent,
     JobContext,
@@ -99,6 +100,10 @@ async def entrypoint(ctx: JobContext):
                 worker.enqueue(row)
 
         stack.push_async_callback(worker.aclose)
+
+        @agent_session.on("close")
+        def on_session_close(_: CloseEvent) -> None:
+            ctx.shutdown(reason="agent session closed")
 
         await agent_session.start(
             agent=agent,
