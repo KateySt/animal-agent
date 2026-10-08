@@ -69,7 +69,7 @@ async def entrypoint(ctx: JobContext):
         anthropic_config = get_anthropic_config()
         speech_config = get_speech_config()
 
-        agent_session = AgentSession(
+        agent_session: AgentSession[None] = AgentSession(
             stt=lk_deepgram.STT(model=speech_config.DEEPGRAM_MODEL, api_key=speech_config.DEEPGRAM_API_KEY),
             llm=lk_anthropic.LLM(
                 model=anthropic_config.ANTHROPIC_MODEL,

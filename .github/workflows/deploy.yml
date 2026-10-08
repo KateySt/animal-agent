@@ -1,0 +1,47 @@
+name: Deploy agent to LiveKit Cloud
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "livekit.toml"
+      - "**.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-agent
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --frozen
+      - run: uv run ruff check src
+      - run: uv run mypy src
+
+  deploy:
+    needs: check
+    runs-on: ubuntu-latest
+    env:
+      LIVEKIT_URL: ${{ secrets.LIVEKIT_URL }}
+      LIVEKIT_API_KEY: ${{ secrets.LIVEKIT_API_KEY }}
+      LIVEKIT_API_SECRET: ${{ secrets.LIVEKIT_API_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy
+        uses: livekit/deploy-action@v2.12.2
+        with:
+          OPERATION: deploy
+
+      - name: Wait until running
+        uses: livekit/deploy-action@v2.12.2
+        with:
+          OPERATION: status-retry
+          TIMEOUT: 5m
